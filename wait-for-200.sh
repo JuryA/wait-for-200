@@ -1,18 +1,36 @@
-#!/bin/bash
+#!/bash
+# -*- coding: utf-8 -*-
 
-TIMEOUT="${TIMEOUT:-600}"
-seconds=0
+timeout="${TIMEOUT:-600}"
+url="${URL:-www.google.com}"
 
-echo 'Waiting up to' $TIMEOUT 'seconds for HTTP 200 from' $URL 
-until [ "$seconds" -gt "$TIMEOUT" ] || $(curl --output /dev/null --silent --max-time $TIMEOUT --head --fail $URL); do
-  printf '.'
-  sleep 5
-  seconds=$((seconds+5))
-done
+# pure bash sleep 
+sleep() {
+  # shellcheck disable=SC2015,SC2162
+  coproc read -t "$1" && wait "$!" || true
+}
 
-if [ "$seconds" -lt "$TIMEOUT" ]; then
+timeout()
+{
+	local cmd_pid sleep_pid retval
+
+	(shift; "$@") &   # shift out sleep value and run rest as command in background job
+	cmd_pid=$!
+
+	(sleep "$1"; kill "$cmd_pid" 2>/dev/null) &
+	sleep_pid=$!
+
+	wait "$cmd_pid"
+	retval=$?
+	kill "$sleep_pid" 2>/dev/null
+
+	return "$retval"
+}
+
+echo "Waiting up to $timeout seconds for HTTP 200 from $url"
+if timeout "$timeout" curl --output /dev/null --silent --max-time "$timeout" --head --fail "$url"; then
   echo 'OK'
 else
-  echo "ERROR: Timed out wating for HTTP 200 from" $URL >&2
+  echo "ERROR: Timed out wating for HTTP 200 from $url" >&2
   exit 1
 fi
