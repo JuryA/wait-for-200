@@ -10,4 +10,6 @@ COPY --chmod=0755 wait-for-200.sh .
 
 ENV PATH="/"
 
+STOPSIGNAL SIGKILL
+
 ENTRYPOINT [ "bash","-c","wait-for-200.sh" ]
