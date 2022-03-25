@@ -23,6 +23,7 @@ podman run --rm -e URL=http://test.com -e TIMEOUT=200 wait-for-200
 ### Prerequisites
 
 - **buildah** - [How to install](https://github.com/containers/buildah/blob/main/install.md)
+- (alternative **docker** - use `alias buildah=docker`)
 
 ```shell
 $ buildah build -t wait-for-200 .
