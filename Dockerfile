@@ -1,4 +1,6 @@
 FROM scratch
+LABEL org.opencontainers.image.authors="jiri.altman@usu.com"
+LABEL version=0.2
 
 WORKDIR /
 
